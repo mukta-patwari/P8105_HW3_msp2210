@@ -33,3 +33,16 @@ data("instacart")
 ```
 
 There are `r nrow(instacart)` observations in this dataset, with the following `r ncol(instacart)` variables: `r colnames(instacart)`. Some of the key variables are `order_id` and `user_id` which give information on the individual ordering these items on Instacart. Other key variables are `product_name`, which refers to what product(s) the individual ordered, and `aisle` and `department` which give location data within the grocery store.
+
+Data exploration
+
+```{r}
+instacart %>% 
+  distinct(aisle) %>% 
+  nrow()
+
+instacart %>% 
+  count(aisle, sort = TRUE)
+```
+
+There are 134 different aisles in this dataset. The top 10 most frequented aisles were: fresh vegetables, fresh fruits, packaged vegetables/fruits, yogurt, packaged cheese, water/seltzer/sparkling water, milk, chips/pretzels, soy/lactose free, and bread.
