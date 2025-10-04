@@ -82,3 +82,19 @@ instacart %>%
   knitr::kable(digits = 2)
 ```
 
+Creating a table for pink lady apples and coffee ice cream
+```{r}
+instacart %>%
+  mutate(order_dow = factor(order_dow, 
+    levels = 0:6,
+    labels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))) %>% 
+  filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>%
+  group_by(product_name, order_dow) %>%
+  summarize(mean_hour = mean(order_hour_of_day, na.rm = TRUE)) %>% 
+  pivot_wider(
+    names_from = order_dow,
+    values_from = mean_hour
+  ) %>% 
+  knitr::kable(digits = 1)
+```
+
