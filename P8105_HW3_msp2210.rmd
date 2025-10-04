@@ -42,7 +42,11 @@ instacart %>%
   nrow()
 
 instacart %>% 
-  count(aisle, sort = TRUE)
+  group_by(aisle) %>% 
+  summarize(
+    n = n()
+  ) %>% 
+  arrange(desc(n))
 ```
 
 There are 134 different aisles in this dataset. The top 10 most frequented aisles were: fresh vegetables, fresh fruits, packaged vegetables/fruits, yogurt, packaged cheese, water/seltzer/sparkling water, milk, chips/pretzels, soy/lactose free, and bread.
