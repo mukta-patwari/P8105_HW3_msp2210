@@ -35,7 +35,6 @@ data("instacart")
 There are `r nrow(instacart)` observations in this dataset, with the following `r ncol(instacart)` variables: `r colnames(instacart)`. Some of the key variables are `order_id` and `user_id` which give information on the individual ordering these items on Instacart. Other key variables are `product_name`, which refers to what product(s) the individual ordered, and `aisle` and `department` which give location data within the grocery store.
 
 Data exploration
-
 ```{r}
 instacart %>% 
   distinct(aisle) %>% 
@@ -68,5 +67,18 @@ instacart %>%
   )
 
 # Having an issue where the aisle names are too long.
+```
+
+Popular items in baking ingredients, dog food care, and packaged vegetables/fruits aisles
+
+```{r}
+instacart %>%
+  filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>% 
+  count(aisle, product_name) %>%
+  group_by(aisle) %>% 
+  mutate(product_rank = min_rank(desc(n))) %>% 
+  filter(product_rank <= 3) %>%
+  arrange(aisle, product_rank) %>% 
+  knitr::kable(digits = 2)
 ```
 
