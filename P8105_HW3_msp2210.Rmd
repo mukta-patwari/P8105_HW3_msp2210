@@ -158,3 +158,11 @@ zillow_df =
     ) %>% 
   relocate(year, month, day, state, city, county, zip_code, neighborhood, rent)
 ```
+
+**How many ZIP codes are observed 116 times? How many are observed fewer than 10 times? Why are some ZIP codes are observed rarely and others observed in each month?**
+
+```{r}
+zillow_df %>%
+  group_by(zip_code) %>% 
+  summarise(count = n())
+```
