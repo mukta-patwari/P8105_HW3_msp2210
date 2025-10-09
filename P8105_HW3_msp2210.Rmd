@@ -82,7 +82,8 @@ instacart %>%
   group_by(aisle) %>% 
   mutate(product_rank = min_rank(desc(n))) %>% 
   filter(product_rank <= 3) %>%
-  arrange(aisle) %>% 
+  arrange(aisle, product_rank) %>%
+  select(-product_rank) %>% 
   knitr::kable(digits = 2)
 ```
 
