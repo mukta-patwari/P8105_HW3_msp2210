@@ -107,3 +107,54 @@ instacart %>%
 ```
 
 This table shows the mean order hour of day for each day of the week that the coffee ice cream and pink lady apples were ordered. On Sunday, coffee ice cream was ordered at hour 13.8, which when converted to an hour-time format, would probably be around 1:40. Similarly, the mean hour that pink lady apples were ordered was 13.4, which would be around 1:20. The remaining columns are the days of the week Monday-Saturday, with the corresponding mean hours for the same products ordered.
+
+## Problem 2
+
+Loading, importing, tidying zipcodes
+```{r}
+zipcodes_df =
+  read_csv(
+    "zillow_data/Zip Codes.csv", 
+    na = c("NA", ".", "")
+    ) %>%
+  janitor::clean_names() %>%
+  filter(!(zip_code %in% c(10463, 11201) & county == "New York")) %>% 
+  select(-state_fips, -county_code, -county_fips, -file_date)
+
+
+# Duplicated zip-codes:
+zipcodes_df[duplicated(zipcodes_df$zip_code),]
+```
+
+Loading, importing, tidying rental price
+```{r}
+rentalprice_df =
+  read_csv("zillow_data/Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv", na = c("NA", ".", "")) %>% 
+  rename_with(janitor::make_clean_names, .cols = 1:9) %>% 
+  pivot_longer(
+    cols = "2015-01-31":"2024-08-31",
+    names_to = "date",
+    values_to = "rent",
+  ) %>%
+  mutate(
+    date = as.Date(date)
+  ) %>%
+  separate(
+    date, into = c("year", "month", "day"),
+    convert = TRUE,
+  ) %>% 
+  rename(zip_code = region_name, county = county_name) %>%
+  mutate(
+    county = (str_remove(county, "County"))
+  ) %>% 
+  select(-region_id, -size_rank, -region_type, -state_name, -metro, -county)
+```
+
+Merging datasets into zillow dataframe
+```{r}
+zillow_df =
+  left_join(
+    rentalprice_df, zipcodes_df, by = "zip_code"
+    ) %>% 
+  relocate(year, month, day, state, city, county, zip_code, neighborhood, rent)
+```
