@@ -88,3 +88,22 @@ instacart %>%
 ```
 
 The table shows that in the baking ingredidents aisle, the products light brown sugar, pure baking soda, and cane sugar were most ordered; in the dog food care aisle, the most ordered products were "Snack Sticks Chicken & Rice Recipe Dog Treats", "Organix Chicken & Brown Rice Recipe" and small dog biscuits; in the packaged vegetables fruits aisle, the most ordered items were organic baby spinach, organic raspberries, and organic blueberries.
+
+**Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).**
+
+```{r}
+instacart %>%
+  mutate(order_dow = factor(order_dow, 
+    levels = 0:6,
+    labels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))) %>% 
+  filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>%
+  group_by(product_name, order_dow) %>%
+  summarize(mean_hour = mean(order_hour_of_day, na.rm = TRUE)) %>% 
+  pivot_wider(
+    names_from = order_dow,
+    values_from = mean_hour
+  ) %>% 
+  knitr::kable(digits = 1)
+```
+
+This table shows the mean order hour of day for each day of the week that the coffee ice cream and pink lady apples were ordered. On Sunday, coffee ice cream was ordered at hour 13.8, which when converted to an hour-time format, would probably be around 1:40. Similarly, the mean hour that pink lady apples were ordered was 13.4, which would be around 1:20. The remaining columns are the days of the week Monday-Saturday, with the corresponding mean hours for the same products ordered.
