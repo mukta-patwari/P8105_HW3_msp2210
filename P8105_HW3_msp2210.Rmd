@@ -51,3 +51,23 @@ instacart %>%
 ```
 
 There are 134 different aisles in this dataset. The top 10 most frequented aisles were: fresh vegetables, fresh fruits, packaged vegetables/fruits, yogurt, packaged cheese, water/seltzer/sparkling water, milk, chips/pretzels, soy/lactose free, and bread.
+
+**Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.**
+
+```{r aisle-plot}
+instacart %>% 
+  group_by(aisle) %>% 
+  summarize(
+    n = n()
+  ) %>%
+  filter(n > 10000) %>%
+  ggplot(aes(x = reorder(aisle, n), y = n)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+  labs(
+    title = "Items Ordered by Aisle (>10,000 Orders)",
+    x = "Aisle Name",
+    y = "Number of Items Ordered"
+  )
+```
+
