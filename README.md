@@ -1,1 +1,7 @@
-# P8105_HW3_msp2210
+# P8105 HW 3
+
+This is a repository for Homework 3.
+
+Name: Mukta Patwari
+
+UNI: msp2210
