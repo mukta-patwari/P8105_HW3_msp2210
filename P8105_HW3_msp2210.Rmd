@@ -332,3 +332,29 @@ nhanes_df %>%
 The table depicts how education levels are different according to sex. Namely, the `more than high school` category had more participants, regardless of sex, although there are just 3 more women comparatively. In the `less than high school` category, the number of men and number of women are almost identical; there are 27 men and 28 women. The "largest" difference is seen in the `high school equivalent`category, where there are 12 more men than women. 
 
 The density plots show the age distributions for these participants, divided by both sex and education category. For those in the `less than high school category`, the densities largely overlap, with most participants in this category ranging between ~40-70 years. There are not as many participants between the ages of 20-40. In the `high school equivalent` category, the distribution for men peaks at around 20-40 years and then again at 60 years, while for women it peaks at around 75-80 years. This indicates that this category has more older women and relatively younger men, and there is less overlap. In the `more than high school` category, the distributions overlap again, with peaks between 20-40 years.Importantly, the density for women is much higher than that of men, indicating that there are more women with higher education in this group than there are men. For this group, there are remarkably less participants at older ages.
+
+**Using your tidied dataset, aggregate across minutes to create a total activity variable for each participant. Plot these total activities (y-axis) against age (x-axis); your plot should compare men to women and have separate panels for each education level. Include a trend line or a smooth to illustrate differences.**
+
+```{r total-activity-plot}
+nhanes_df = nhanes_df %>% 
+  pivot_longer(
+    cols = starts_with("min"),
+    names_to = "minutes",
+    values_to = "mims_value"
+  ) 
+
+nhanes_df %>% 
+  group_by(seqn, age, sex, education) %>% 
+  summarize(
+    total_activity = sum(mims_value)
+  ) %>%
+  ggplot(aes(x = age, y = total_activity, color = sex)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ education) +
+  labs(
+    title = "Total activity per day by age and educational level",
+    x = "Age",
+    y = "Total Activity per day"
+  )
+```
