@@ -260,7 +260,7 @@ This plot shows the distribution of average rental prices, for each zip-code fro
 
 **Combine the two previous plots into a single graphic, and export this to a results folder in your repository.**
 
-```{r}
+```{r combined-plot}
 combined_plots = zipcodes_price_annual/zipcodes_price_2023
 
 ggsave("results/nyc_rent_comparisons.png", combined_plots, width = 12, height = 10, dpi = 300)
@@ -304,3 +304,31 @@ nhanes_df =
   drop_na(sex, age, bmi, education) %>% 
   filter(age >= 21)
 ```
+
+**Produce a reader-friendly table for the number of men and women in each education category, and create a visualization of the age distributions for men and women in each education category.**
+
+```{r age-dist-plot}
+nhanes_df %>% 
+  group_by(sex, education) %>% 
+  summarize(
+    count = n()
+  ) %>%
+  pivot_wider(
+    names_from = "education",
+    values_from = "count"
+  ) %>% 
+  knitr::kable()
+
+nhanes_df %>% 
+  group_by(sex, education) %>% 
+  ggplot(aes(x = age, fill = sex)) +
+  geom_density(alpha = 0.5) +
+  facet_grid(. ~ education) +
+  labs(
+    title = "Distribution of Age by Sex per Education Category"
+  )
+```
+
+The table depicts how education levels are different according to sex. Namely, the `more than high school` category had more participants, regardless of sex, although there are just 3 more women comparatively. In the `less than high school` category, the number of men and number of women are almost identical; there are 27 men and 28 women. The "largest" difference is seen in the `high school equivalent`category, where there are 12 more men than women. 
+
+The density plots show the age distributions for these participants, divided by both sex and education category. For those in the `less than high school category`, the densities largely overlap, with most participants in this category ranging between ~40-70 years. There are not as many participants between the ages of 20-40. In the `high school equivalent` category, the distribution for men peaks at around 20-40 years and then again at 60 years, while for women it peaks at around 75-80 years. This indicates that this category has more older women and relatively younger men, and there is less overlap. In the `more than high school` category, the distributions overlap again, with peaks between 20-40 years.Importantly, the density for women is much higher than that of men, indicating that there are more women with higher education in this group than there are men. For this group, there are remarkably less participants at older ages.
