@@ -139,6 +139,10 @@ rentalprice_df =
   mutate(
     date = as.Date(date)
   ) %>%
+  separate(
+    date, into = c("year", "month", "day"),
+    convert = TRUE,
+  ) %>% 
   rename(zip_code = region_name, county = county_name) %>%
   mutate(
     county = (str_remove(county, "County"))
@@ -152,7 +156,7 @@ zillow_df =
   left_join(
     rentalprice_df, zipcodes_df, by = "zip_code"
     ) %>%
-  relocate(date, state, city, county, zip_code, neighborhood, rent)
+  relocate(year, month, day, state, city, county, zip_code, neighborhood, rent)
 ```
 
 **How many ZIP codes are observed 116 times? How many are observed fewer than 10 times? Why are some ZIP codes are observed rarely and others observed in each month?**
@@ -170,11 +174,10 @@ zillow_df %>%
 
 There are 47 zip codes that appear 116 times throughout the whole dataset, and 25 zip codes that appear less than 25 times. This is likely related to population densities and urbanization. The zip code 10001 is distinctly in Manhattan, which is a highly urban area with many people and large fluctuations in rental prices/unit occupancies. It is very common for people to sign one-year leases and then not renew their licenses, which means these units are put on the market every year. On the other hand, a zip code like 10308, which is in Staten Island may show up only a few times as these kinds of areas are more suburban and resiential, and occupants may rent these places for years together (therefore no rental prices every year).
 
-**Create a reader-friendly table showing the average rental price in each borough and year (not month). Comment on trends in this table.**
+**Create a reader-friendly table showing the average rental price in each borough and year.**
 
 ```{r}
 zillow_df %>%
-  mutate(year = format(date, "%Y")) %>%
   group_by(county, year) %>%
   summarize(
     mean_rent = mean(rent, na.rm = TRUE)
@@ -187,3 +190,22 @@ zillow_df %>%
 ```
 
 Since 2015, there has been a general increase in rent. While the rental price observations are unavailable in Richmond county from 2015-2019, there is still a clear increase, especially after 2020. The highest rental price increases occur in New York county/Manhattan, from 3022.04 dollars in 2015 to 4078.44 dollars in 2024. A more noticeable trend is how rental prices changed during/after the pandemic, and that they increased immensely. This is probably because people were not living in the city due to lockdown, and to compensate, realty groups had to increase their prices significantly due to losses. 
+
+**Make a plot showing NYC Rental Prices within ZIP codes for all available years.**
+
+```{r zip-codes-plot}
+zillow_df %>%
+  group_by(zip_code, county, year) %>% 
+  summarize(
+    mean_rent = mean(rent, na.rm = TRUE)
+  ) %>% 
+  ggplot(aes(x = year, y = mean_rent, color = county)) +
+  geom_point() + 
+  facet_grid(. ~ county) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+  labs(
+    title = "NYC Rental Prices Across Borough, from 2015-2024",
+    x = "Year",
+    y = "Mean Rental Price"
+  )
+```
