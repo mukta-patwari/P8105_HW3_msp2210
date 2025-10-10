@@ -24,6 +24,8 @@ options(
 
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
+
+library(patchwork)
 ```
 
 ## Problem 1
@@ -203,7 +205,8 @@ Since 2015, there has been a general increase in rent. While the rental price ob
 **Make a plot showing NYC Rental Prices within ZIP codes for all available years.**
 
 ```{r zip-codes-plot}
-zillow_df %>%
+zipcodes_price_annual = 
+  zillow_df %>%
   group_by(zip_code, borough, year) %>%
   summarize(
     mean_rent = mean(rent, na.rm = TRUE)
@@ -220,30 +223,47 @@ zillow_df %>%
   scale_x_continuous(
     breaks = seq(2015, 2024, by = 3)
   )
+
+print(zipcodes_price_annual)
 ```
 
-This plot shows the distribution of average rental prices, for each zip-code from 2015-2024, divided by borough. This shows that there is a general upwards trend in zip code-level rental price from 2015-2024 across each borough, with most significant increases in Manhattan, folowed by QUeens and then Brooklyn. 
+This plot shows the distribution of average rental prices, for each zip-code from 2015-2024, divided by borough. This shows that there is a general upwards trend in zip code-level rental price from 2015-2024 across each borough, with most significant increases in Manhattan, folowed by Queens and then Brooklyn. 
 
 **Compute the average rental price within each ZIP code over each month in 2023. Make a reader-friendly plot showing the distribution of ZIP-code-level rental prices across boroughs.**
 
 ```{r 2023-plot}
-zillow_df %>%
+zipcodes_price_2023 = 
+  zillow_df %>%
   group_by(zip_code, borough, month) %>% 
   filter(year == 2023) %>%
+  mutate(
+    month = month.abb[(month)],
+    month = factor(month, levels = month.abb)
+  ) %>% 
   summarize(
     mean_rent_2023 = mean(rent, na.rm = TRUE)
   ) %>%
   ggplot(aes(x = month, y = mean_rent_2023, color = borough)) +
   geom_point(alpha = 0.5) +
   facet_grid (. ~ borough) +
-  scale_x_continuous(
-    breaks = seq(1, 12, by = 1)
-  ) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   labs(
     title = "New York City Rental Prices Across Borough in 2023",
     x = "Month",
     y = "Average Rental Price"
   )
+
+print(zipcodes_price_2023)
 ```
 
 This plot shows the distribution of average rental prices, for each zip-code from 2023, divided by borough. Here, the trend is relatively stable with no large significant increases or decreases at the zip-code level. Even in the year of 2023, Manhattan had some of the highest average rental prices when compared to the other boroughs.
+
+**Combine the two previous plots into a single graphic, and export this to a results folder in your repository.**
+
+```{r}
+combined_plots = zipcodes_price_annual/zipcodes_price_2023
+
+print(combined_plots) 
+
+ggsave("results/nyc_rent_comparisons.png", combined_plots, width = 12, height = 10, dpi = 300)
+```
