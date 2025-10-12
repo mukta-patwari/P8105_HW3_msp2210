@@ -374,7 +374,7 @@ nhanes_df %>%
     mean_activity = mean(mims_value)
   ) %>% 
   ggplot(aes(x = minutes, y = mean_activity, color = sex)) +
-  geom_point(alpha = 0.25) +
+  geom_point(alpha = 0.1) +
   geom_smooth(aes(group = sex), se = FALSE) +
   facet_grid(. ~ education) +
   scale_x_continuous(
