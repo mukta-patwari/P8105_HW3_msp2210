@@ -341,7 +341,11 @@ nhanes_df = nhanes_df %>%
     cols = starts_with("min"),
     names_to = "minutes",
     values_to = "mims_value"
-  ) 
+  ) %>% 
+  mutate(
+  minutes = str_remove(minutes, "min") %>% 
+  as.numeric(minutes)
+  )
 
 nhanes_df %>% 
   group_by(seqn, age, sex, education) %>% 
@@ -367,14 +371,20 @@ This plot displays age distributions for total activity per day across each educ
 nhanes_df %>% 
   group_by(minutes, sex, education) %>% 
   summarize(
-    total_activity = sum(mims_value)
+    mean_activity = mean(mims_value)
   ) %>% 
-  ggplot(aes(x = minutes, y = total_activity, color = sex)) +
+  ggplot(aes(x = minutes, y = mean_activity, color = sex)) +
   geom_smooth(aes(group = sex), se = FALSE) +
   facet_grid(. ~ education) +
+  scale_x_continuous(
+    breaks = seq(0, 1440, by = 360)
+  ) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   labs(
     title = "Per day activity-time course by sex and education level",
     x = "Minutes",
-    y = "Total activity per day"
+    y = "Mean activity"
   )
 ```
+
+This plot depicts the mean activity per minute against minute to show the per day activity-time course, stratified by educational level and divided by gender. For the most part, the mean activities/minute for men and women both majorly overlap for all three educational categories, with women having slightly increased mean activity throughout. When comparing educational levels, those in the `less than high school` category had greater overall mean activity/minute than those in the other two categories. 
